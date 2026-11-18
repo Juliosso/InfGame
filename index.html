@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VWO 4 Hardware & Software Klimspel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="game-header">
+        <h1 id="level-title">Hardware & Software Klim</h1>
+        <div id="hud">
+            <span>👤 <span id="hud-name">-</span></span>
+            <span>🎨 <span id="hud-theme">-</span></span>
+            <span>🎯 <span id="hud-difficulty">-</span></span>
+            <span>🏆 Score: <span id="hud-score">0</span>/9+</span>
+            <span>💡 Hints: <span id="hud-hints">3</span></span>
+            <span>⏱️ <span id="hud-timer">00:00</span></span>
+            <button class="home-btn" onclick="goToHome()">🏠 Home</button>
+        </div>
+    </div>
+
+    <div id="game-wrapper">
+        <div id="feedback-toast">Fout antwoord! Terug naar beneden! 🔄</div>
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+        <div id="touch-controls">
+            <div class="d-pad">
+                <button id="btn-left" class="touch-btn">◀</button>
+                <button id="btn-right" class="touch-btn">▶</button>
+            </div>
+            <button id="btn-jump" class="touch-btn">▲</button>
+        </div>
+
+        <div id="start-overlay" class="overlay">
+            <div class="overlay-content">
+                <h1>VWO 4 Klimspel</h1>
+                <p style="color: rgba(255,255,255,0.7); margin: 0 0 10px 0; font-size: 0.88em;">
+                    Behaal minimaal <b>9 punten</b> om de finish vrij te spelen, ontwijk de gevaren en bereik de top!
+                </p>
+
+                <input type="text" id="username-input" class="input-field" placeholder="Jouw voornaam..."
+                    autocomplete="off">
+
+                <div class="selector-label">1. Kies je moeilijkheidsgraad:</div>
+                <div class="selector-group">
+                    <button type="button" class="choice-btn diff-btn"
+                        onclick="selectDifficulty('makkelijk', this)">Makkelijk</button>
+                    <button type="button" class="choice-btn diff-btn active"
+                        onclick="selectDifficulty('gemiddeld', this)">Normaal</button>
+                    <button type="button" id="btn-diff-hard" class="choice-btn diff-btn locked"
+                        onclick="selectDifficulty('moeilijk', this)">🔒 Moeilijk</button>
+                </div>
+
+                <div class="selector-label">2. Kies je thema & karakter:</div>
+                <div class="selector-group">
+                    <button type="button" class="choice-btn theme-btn active" onclick="selectTheme('space', this)">🚀
+                        Space</button>
+                    <button type="button" class="choice-btn theme-btn" onclick="selectTheme('middeleeuwen', this)">⚔️
+                        Middeleeuws</button>
+                    <button type="button" class="choice-btn theme-btn" onclick="selectTheme('berg', this)">🏔️ Berg</button>
+                    <button type="button" class="choice-btn theme-btn" onclick="selectTheme('boerderij', this)">🚜
+                        Boerderij</button>
+                </div>
+
+                <div class="selector-label">3. Eigen personage (optioneel):</div>
+                <div class="custom-character-controls">
+                    <input type="file" id="character-upload"
+                        accept=".jpg,.jpeg,.png,.gif,.mp4,image/jpeg,image/png,image/gif,video/mp4"
+                        aria-label="Kies een eigen personage als JPG, PNG, GIF of MP4">
+                    <button type="button" class="choice-btn" onclick="resetCustomCharacter()">↺ Standaard personage</button>
+                </div>
+                <p id="character-file-name">Geen eigen bestand gekozen. Het standaardpersonage wordt gebruikt.</p>
+
+                <button class="btn btn-start" onclick="startGame()">Start Klimtocht</button>
+            </div>
+        </div>
+
+        <div id="quiz-overlay" class="overlay">
+            <div class="overlay-content">
+                <h3 id="q-category">Blok 1</h3>
+                <h2 id="q-text">Vraag komt hier...</h2>
+                <div id="answers-container"></div>
+                <button id="hint-btn" class="btn-hint" onclick="useHint()">💡 Gebruik 50/50 Hint (nog 3 over)</button>
+            </div>
+        </div>
+
+        <div id="win-overlay" class="overlay">
+            <div class="overlay-content">
+                <h1
+                    style="background: -webkit-linear-gradient(45deg, #00c6ff, #96c93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2em; margin: 0;">
+                    Gefeliciteerd! 🎉</h1>
+                <div id="win-stats"
+                    style="font-size: 1.02em; color: #fff; margin: 16px 0; line-height: 1.75; text-align: left; background: rgba(255,255,255,0.05); padding: 18px 28px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                <button class="btn btn-start" onclick="goToHome()" style="max-width: 240px;">Opnieuw Spelen</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="instructions">
+        <p><b>Pijltjestoetsen / D-pad</b> = Bewegen &nbsp;|&nbsp; <b>Spatie / ▲</b> = Springen (Dubbele sprong!)
+            &nbsp;|&nbsp; Finish opent bij <b>9+ score</b>.</p>
+    </div>
+
+    <!-- Scripts in vaste volgorde zodat ze direct met elkaar samenwerken -->
+    <script src="questions.js"></script>
+    <script src="config.js"></script>
+    <script src="hazards.js"></script>
+    <script src="ui.js"></script>
+    <script src="renderer.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
